@@ -1,0 +1,17 @@
+---
+description: When working with repositories and models to define data schemas or interact with the database
+globs: 
+alwaysApply: false
+---
+
+# Repositories and Database access from code
+
+- Use SQLModel as an ORM.
+- The underlying database engine is SQLite
+- All database operations, including queries, updates, inserts, should be handled in a repository
+- Refer to [repository.py](mdc:.cursor/examples/repository.py) as a reference of how repositories are built.
+- All repositories extend [base_repository.py](mdc:app/core/base_repository.py), to inherit common databse operations
+- Prefer using SQLModel for queries, but feel free to use raw sql (with proper sanitization) if the query is complex enough
+- When creating a new model, add an import for it on [env.py](mdc:app/alembic/env.py), so alembic recognizes the new model
+- If creating or updating models, create an alembic migration by running `alembic revision --autogenerate -m "<migration name here>"`. 
+- Refer to [backend-structure.md](mdc:cursor/backend-structure.md) to know where to add new model and repository files

@@ -1,0 +1,87 @@
+---
+description: Any new features, refactors, changes
+globs: 
+alwaysApply: false
+---
+# AI Assistant Guide for ProjectName Codebase
+
+Core Development Principles
+
+You are an expert in Python, FastAPI, SQLModel, and SQLite.
+
+Key Principles
+- Write concise, technical code with accurate examples
+- Use functional programming patterns; avoid classes unless necessary
+- Prefer iteration and modularization over code duplication
+- Use descriptive variable names with auxiliary verbs (e.g., is_active, has_error)
+- Maintain strict module boundaries; avoid cross-module dependencies
+
+Module Boundaries
+- Each module should be self-contained with clear interfaces
+- Services should receive required data as parameters instead of fetching from other modules
+- Cross-module data should be passed through route handlers
+- Avoid circular dependencies between modules
+- Keep repository access within its own module
+
+Dependency Management
+- Use dependency injection for infrastructure components (repositories, services)
+- Services should not directly access repositories from other modules
+- Pass necessary data through method parameters instead of injecting repositories
+- Keep dependencies unidirectional (e.g., households -> users, not both ways)
+
+Naming Conventions
+- Use lowercase with underscores for all files and variables (e.g., user_routes.py, db_session)
+- Use PascalCase for models and schemas (e.g., UserModel, PostSchema)
+
+Type Safety
+- Use Python type hints consistently throughout the codebase
+- Use Pydantic models for data validation and serialization
+- Prefer 'X | None' over 'Optional[X]'
+- Avoid enums; use maps instead
+
+Code Structure
+- Organize files with clear separation: routes, utilities, models, schemas
+- Use RORO (Receive Object, Return Object) pattern for functions
+- Handle errors early with guard clauses; avoid deep nesting
+- Implement proper logging and custom error types
+- Keep route handlers thin, move business logic to services
+
+API Development
+- Follow RESTful API design principles
+- Use FastAPI's dependency injection system effectively
+- Implement proper CORS configuration
+- Ensure thorough input validation and sanitization
+- Use appropriate HTTP status codes and response models
+- Implement pagination for list endpoints
+- Use background tasks for time-consuming operations
+- Route handlers should coordinate between modules when needed
+- Services should focus on their module's domain logic
+
+Database Best Practices
+- Use SQLModel for ORM operations
+- Implement database migrations
+- Use appropriate indexes for performance
+- Keep transactions atomic and isolated
+- Implement proper connection pooling
+- Use async operations where beneficial
+- Follow SQLite best practices for concurrent access
+- Always use datetime.now(timezone.utc) for timestamps, not datetime.utcnow()
+- Keep database operations within their respective module's repository
+- Use foreign keys for relationships but maintain module isolation in services
+
+Security
+- Implement proper authentication and authorization
+- Use password hashing with appropriate algorithms
+- Sanitize all user inputs
+- Implement rate limiting
+- Use secure headers
+- Follow OWASP security guidelines
+
+Testing and Deployment
+- Write unit tests for all critical functionality
+- Implement integration tests for API endpoints
+- Use Docker for containerization
+- Follow proper environment configuration practices
+- Implement health check endpoints
+- Use proper logging levels and formats
+- Implement proper error handling and reporting

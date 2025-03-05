@@ -1,0 +1,194 @@
+---
+description: When writing tests for any feature
+globs: 
+---
+# Test Guidelines
+
+## General Structure
+
+1. Tests should be organized in a class named `Test{ServiceName}` for service tests
+2. Use pytest fixtures extensively for setup and dependency injection
+3. Each test file should focus on testing a single service/component
+4. Test files should be named `test_{module_name}.py`
+
+## Fixtures
+
+1. Create mock service fixtures for dependencies:
+   ```python
+   @pytest.fixture
+   def mock_service():
+       """Create a mock service with async methods"""
+       class MockService:
+           async def method(self):
+               return True
+       return MockService()
+   ```
+
+2. Repository fixtures should use the db_session:
+   ```python
+   @pytest.fixture
+   async def repository(db_session):
+       return Repository(db=db_session)
+   ```
+
+3. Service fixtures should combine repositories and mock dependencies:
+   ```python
+   @pytest.fixture
+   async def service(repository, mock_dependency):
+       return Service(
+           repository=repository,
+           dependency=mock_dependency
+       )
+   ```
+
+## Test Case Naming
+
+1. Use descriptive names that indicate:
+   - The scenario being tested
+   - The expected outcome
+   - Any special conditions
+   Example: `test_create_account_no_admin_access`
+
+2. Common patterns:
+   - `test_{action}_success`
+   - `test_{action}_no_access`
+   - `test_{action}_not_found`
+   - `test_{action}_invalid_input`
+
+## Test Case Structure
+
+1. Each test should follow the Arrange-Act-Assert pattern:
+   ```python
+   async def test_example():
+       # Arrange
+       test_data = setup_test_data()
+       
+       # Act
+       result = await service.action(test_data)
+       
+       # Assert
+       assert result.property == expected_value
+   ```
+
+2. For error cases, use pytest.raises:
+   ```python
+   with pytest.raises(HTTPException) as exc_info:
+       await service.action(invalid_data)
+   assert exc_info.value.status_code == 403
+   ```
+
+## Mock Patterns
+
+1. For async mocks, use the async_mock helper:
+   ```python
+   def async_mock(return_value=None):
+       async def mock(*args, **kwargs):
+           return return_value
+       return mock
+   ```
+
+2. Override mock behavior in specific tests:
+   ```python
+   mock_service.method = async_mock(return_value=False)
+   ```
+
+3. Mock error responses:
+   ```python
+   async def mock_error(*args, **kwargs):
+       raise HTTPException(status_code=403, detail="No access")
+   mock_service.method = mock_error
+   ```
+
+## Data Handling
+
+1. Use UUID for IDs:
+   ```python
+   user_id = uuid4()
+   ```
+
+2. Handle monetary values:
+   - Input as Decimal: `Decimal("100.00")`
+   - Store as integers (cents): `10000`
+   - Convert between them in tests as needed
+
+3. Use meaningful test data:
+   - Descriptive names ("Test Account" vs "Account1")
+   - Realistic values for amounts and dates
+   - Consistent test data across related tests
+
+## Testing Patterns
+
+1. CRUD Operations:
+   - Test successful creation
+   - Test successful retrieval
+   - Test successful update
+   - Test successful deletion
+   - Test access control for each operation
+   - Test not found scenarios
+   - Test invalid input scenarios
+
+2. Business Logic:
+   - Test calculations (e.g., balance updates)
+   - Test state transitions
+   - Test validation rules
+   - Test complex operations that affect multiple entities
+
+3. Access Control:
+   - Test admin access
+   - Test non-admin access
+   - Test no access scenarios
+   - Test household member permissions
+
+## Best Practices
+
+1. Keep tests independent:
+   - Each test should be able to run in isolation
+   - Don't rely on state from other tests
+   - Clean up any created data after tests
+
+2. Use clear assertions:
+   - Assert specific values rather than just existence
+   - Include meaningful error messages
+   - Check all relevant properties of the result
+
+3. Test edge cases:
+   - Boundary values
+   - Empty or null inputs
+   - Maximum/minimum values
+   - Invalid data types
+
+4. Maintain test readability:
+   - Use helper functions for common setup
+   - Keep tests focused and concise
+   - Use meaningful variable names
+   - Add comments for complex test scenarios
+
+5. Error handling:
+   - Test both expected and unexpected errors
+   - Verify error messages and status codes
+   - Test error recovery scenarios
+
+## Example Test Structure
+
+```python
+class TestExampleService:
+    async def test_create_success(self, service):
+        # Arrange
+        data = create_test_data()
+        
+        # Act
+        result = await service.create(data)
+        
+        # Assert
+        assert result.property == expected
+        assert isinstance(result, ExpectedType)
+    
+    async def test_create_no_access(self, service, mock_dependency):
+        # Arrange
+        mock_dependency.verify = async_mock(return_value=False)
+        
+        # Act & Assert
+        with pytest.raises(HTTPException) as exc_info:
+            await service.create(data)
+        assert exc_info.value.status_code == 403
+``` 
