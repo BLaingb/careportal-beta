@@ -3,60 +3,78 @@
 import type React from "react";
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { RadioGroup } from "~/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { ArrowRight, Check, Bed, Activity, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePostHog } from 'posthog-js/react';
-export default function CareMatchForm() {
+import events from "~/lib/analytics/events";
 
+const careMatchSchema = z.object({
+  patientName: z.string().min(2, "Name must be at least 2 characters"),
+  careType: z.enum(["stationary", "ambulatory", "daycare"], {
+    required_error: "Please select a care type",
+  }),
+  zipCode: z.string().regex(/^\d{5}$/, "Please enter a valid 5-digit zip code"),
+});
+
+type CareMatchFormData = z.infer<typeof careMatchSchema>;
+
+export default function CareMatchForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    patientName: "",
-    careType: "",
-    zipCode: "",
-  });
+  const STEP_NAMES = ["Patient Name", "Care Type", "Location"];
   const posthog = usePostHog();
 
-  const updateFormData = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const form = useForm<CareMatchFormData>({
+    resolver: zodResolver(careMatchSchema),
+    defaultValues: {
+      patientName: "",
+      careType: undefined,
+      zipCode: "",
+    },
+  });
+
+  // Watch form values to trigger re-renders
+  const { patientName, careType, zipCode } = form.watch();
 
   const nextStep = () => {
-    console.log('nextStep', step);
-    posthog.capture('care_match_form_step_changed', { step: step + 1, method: 'next' });
+    // Controlled form with only 3 steps, so we can use the step index directly
+    const stepName = STEP_NAMES[step]!;
+    const event = events.care_match_form_step_completed;
+    const value = step === 1 ? patientName : step === 2 ? careType : zipCode;
+    posthog.capture(event.name, event.properties({ step: step + 1, stepName, value }));
     setStep((prev) => prev + 1);
   };
 
   const prevStep = () => {
-    posthog.capture('care_match_form_step_changed', { step: step - 1, method: 'prev' });
     setStep((prev) => prev - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (data: CareMatchFormData) => {
+    const event = events.care_match_form_submitted;
+    posthog.capture(event.name, event.properties(data));
     router.push("/results");
   };
 
-  const isStepComplete = () => {
+  const isStepComplete = () => {    
     switch (step) {
       case 1:
-        return formData.patientName.trim() !== "";
+        return patientName?.trim().length >= 2;
       case 2:
-        return formData.careType !== "";
+        return !!careType;
       case 3:
-        return formData.zipCode.trim() !== "";
+        return /^\d{5}$/.test(zipCode || "");
       default:
         return false;
     }
   };
 
-  const handleCareTypeSelect = (value: string) => {
-    updateFormData("careType", value);
-  };
   return (
     <div className="flex items-center justify-center">
       <div className="w-full max-w-md rounded-lg border bg-white p-6 shadow-lg">
@@ -71,12 +89,13 @@ export default function CareMatchForm() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex flex-col items-center">
                 <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${step > i
-                    ? "border-[#6c5ce7] bg-[#6c5ce7] text-white"
-                    : step === i
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border-2 ${
+                    step > i
+                      ? "border-[#6c5ce7] bg-[#6c5ce7] text-white"
+                      : step === i
                       ? "border-[#6c5ce7] text-[#6c5ce7]"
                       : "border-gray-300 text-gray-300"
-                    }`}
+                  }`}
                 >
                   {step > i ? <Check className="h-4 w-4" /> : i}
                 </div>
@@ -94,51 +113,54 @@ export default function CareMatchForm() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           {/* Form content wrapper with fixed height */}
           <div className="relative h-[300px]">
             {/* Step 1: Name */}
             <div
-              className={`absolute left-0 right-0 transition-all duration-300 ${step === 1 ? "opacity-100" : "pointer-events-none opacity-0"
-                }`}
+              className={`absolute left-0 right-0 transition-all duration-300 ${
+                step === 1 ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
             >
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="patient-name">Patient&apos;s Full Name</Label>
+                  <Label htmlFor="patientName">Patient&apos;s Full Name</Label>
                   <Input
-                    id="patient-name"
+                    id="patientName"
                     placeholder="Enter patient's name"
-                    value={formData.patientName}
-                    onChange={(e) => updateFormData("patientName", e.target.value)}
+                    {...form.register("patientName")}
                   />
+                  {form.formState.errors.patientName && (
+                    <p className="text-sm text-red-500">{form.formState.errors.patientName.message}</p>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Step 2: Care Type */}
             <div
-              className={`absolute left-0 right-0 transition-all duration-300 ${step === 2 ? "opacity-100" : "pointer-events-none opacity-0"
-                }`}
+              className={`absolute left-0 right-0 transition-all duration-300 ${
+                step === 2 ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
             >
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Type of Care</Label>
                   <RadioGroup
-                    value={formData.careType}
-                    onValueChange={(value) => updateFormData("careType", value)}
+                    value={careType}
+                    onValueChange={(value) => form.setValue("careType", value as CareMatchFormData["careType"], { shouldValidate: true })}
                     className="space-y-3"
                   >
                     {/* Stationary Care Option */}
-                    <div
-                      className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${formData.careType === "stationary"
-                        ? "border-[#6c5ce7] bg-[#f8f7ff]"
-                        : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      onClick={() => handleCareTypeSelect("stationary")}
-                      role="radio"
-                      aria-checked={formData.careType === "stationary"}
-                      tabIndex={0}
+                    <label
+                      className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
+                        careType === "stationary"
+                          ? "border-[#6c5ce7] bg-[#f8f7ff]"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                      htmlFor="stationary"
                     >
+                      <RadioGroupItem value="stationary" id="stationary" className="sr-only" />
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#f8f7ff]">
                         <Bed className="h-5 w-5 text-[#6c5ce7]" />
                       </div>
@@ -146,19 +168,18 @@ export default function CareMatchForm() {
                         <p className="font-medium text-[#6c5ce7]">Stationary Care</p>
                         <p className="text-sm text-gray-600">Residential care with 24/7 support</p>
                       </div>
-                    </div>
+                    </label>
 
                     {/* Ambulatory Care Option */}
-                    <div
-                      className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${formData.careType === "ambulatory"
-                        ? "border-[#6c5ce7] bg-[#f8f7ff]"
-                        : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      onClick={() => handleCareTypeSelect("ambulatory")}
-                      role="radio"
-                      aria-checked={formData.careType === "ambulatory"}
-                      tabIndex={0}
+                    <label
+                      className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
+                        careType === "ambulatory"
+                          ? "border-[#6c5ce7] bg-[#f8f7ff]"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                      htmlFor="ambulatory"
                     >
+                      <RadioGroupItem value="ambulatory" id="ambulatory" className="sr-only" />
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#f8f7ff]">
                         <Activity className="h-5 w-5 text-[#6c5ce7]" />
                       </div>
@@ -166,19 +187,18 @@ export default function CareMatchForm() {
                         <p className="font-medium text-[#6c5ce7]">Ambulatory Care</p>
                         <p className="text-sm text-gray-600">Outpatient services without overnight stays</p>
                       </div>
-                    </div>
+                    </label>
 
                     {/* Day Care Option */}
-                    <div
-                      className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${formData.careType === "daycare"
-                        ? "border-[#6c5ce7] bg-[#f8f7ff]"
-                        : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      onClick={() => handleCareTypeSelect("daycare")}
-                      role="radio"
-                      aria-checked={formData.careType === "daycare"}
-                      tabIndex={0}
+                    <label
+                      className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
+                        careType === "daycare"
+                          ? "border-[#6c5ce7] bg-[#f8f7ff]"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                      htmlFor="daycare"
                     >
+                      <RadioGroupItem value="daycare" id="daycare" className="sr-only" />
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#f8f7ff]">
                         <Sun className="h-5 w-5 text-[#6c5ce7]" />
                       </div>
@@ -186,26 +206,34 @@ export default function CareMatchForm() {
                         <p className="font-medium text-[#6c5ce7]">Day Care</p>
                         <p className="text-sm text-gray-600">Supervised care during daytime hours only</p>
                       </div>
-                    </div>
+                    </label>
                   </RadioGroup>
+                  {form.formState.errors.careType && (
+                    <p className="text-sm text-red-500">{form.formState.errors.careType.message}</p>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Step 3: Location */}
             <div
-              className={`absolute left-0 right-0 transition-all duration-300 ${step === 3 ? "opacity-100" : "pointer-events-none opacity-0"
-                }`}
+              className={`absolute left-0 right-0 transition-all duration-300 ${
+                step === 3 ? "opacity-100" : "pointer-events-none opacity-0"
+              }`}
             >
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="zip-code">Zip Code</Label>
+                  <Label htmlFor="zipCode">Zip Code</Label>
                   <Input
-                    id="zip-code"
+                    id="zipCode"
                     placeholder="Enter zip code"
-                    value={formData.zipCode}
-                    onChange={(e) => updateFormData("zipCode", e.target.value)}
+                    {...form.register("zipCode")}
+                    maxLength={5}
+                    inputMode="numeric"
                   />
+                  {form.formState.errors.zipCode && (
+                    <p className="text-sm text-red-500">{form.formState.errors.zipCode.message}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -231,7 +259,11 @@ export default function CareMatchForm() {
                 Next <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button type="submit" className="bg-[#6c5ce7] hover:bg-[#5b4bc4]" disabled={!isStepComplete()}>
+              <Button 
+                type="submit" 
+                className="bg-[#6c5ce7] hover:bg-[#5b4bc4]" 
+                disabled={!isStepComplete()}
+              >
                 Find Matches
               </Button>
             )}
