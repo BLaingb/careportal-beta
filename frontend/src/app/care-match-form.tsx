@@ -114,12 +114,12 @@ export default function CareMatchForm() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          {/* Form content wrapper with fixed height */}
-          <div className="relative h-[300px]">
+          {/* Form content wrapper */}
+          <div className="relative">
             {/* Step 1: Name */}
             <div
-              className={`absolute left-0 right-0 transition-all duration-300 ${
-                step === 1 ? "opacity-100" : "pointer-events-none opacity-0"
+              className={`transition-all duration-300 ${
+                step === 1 ? "block" : "hidden"
               }`}
             >
               <div className="space-y-4">
@@ -139,8 +139,8 @@ export default function CareMatchForm() {
 
             {/* Step 2: Care Type */}
             <div
-              className={`absolute left-0 right-0 transition-all duration-300 ${
-                step === 2 ? "opacity-100" : "pointer-events-none opacity-0"
+              className={`transition-all duration-300 ${
+                step === 2 ? "block" : "hidden"
               }`}
             >
               <div className="space-y-4">
@@ -217,8 +217,8 @@ export default function CareMatchForm() {
 
             {/* Step 3: Location */}
             <div
-              className={`absolute left-0 right-0 transition-all duration-300 ${
-                step === 3 ? "opacity-100" : "pointer-events-none opacity-0"
+              className={`transition-all duration-300 ${
+                step === 3 ? "block" : "hidden"
               }`}
             >
               <div className="space-y-4">
