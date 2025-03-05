@@ -1,9 +1,9 @@
-import { Button } from "~/components/ui/button"
-import { Badge } from "~/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
-import { ArrowLeft, Calendar, Check, Heart, MapPin, Phone, Star } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { ArrowLeft, Calendar, Check, Heart, MapPin, Phone, Star } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 export default async function FacilityDetail({ params }: { params: Promise<{ id: string }> }) {
   // This would normally come from a database or API based on the ID
   const { id } = await params;
@@ -63,7 +63,7 @@ export default async function FacilityDetail({ params }: { params: Promise<{ id:
         text: "Moving to Sunrise was the best decision I've made. The community is wonderful and I've made many new friends.",
       },
     ],
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -252,6 +252,6 @@ export default async function FacilityDetail({ params }: { params: Promise<{ id:
         </div>
       </footer>
     </div>
-  )
+  );
 }
 

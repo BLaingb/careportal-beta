@@ -5,7 +5,8 @@ const config = {
     "project": true
   },
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "@stylistic/ts"
   ],
   "ignorePatterns": ["node_modules", "dist", "build", "public", "tailwind.config.js"],
   "extends": [
@@ -37,7 +38,8 @@ const config = {
           "attributes": false
         }
       }
-    ]
+    ],
+    "@stylistic/ts/semi": ["error", "always"]
   }
 }
 module.exports = config;

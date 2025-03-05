@@ -1,9 +1,9 @@
-import type React from "react"
+import type React from "react";
 
-import Link from "next/link"
-import { Button } from "~/components/ui/button"
-import { ArrowRight } from "lucide-react"
-import CareMatchForm from "./care-match-form"
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import CareMatchForm from "./care-match-form";
 export default function Home() {
 
   return (
@@ -31,6 +31,6 @@ export default function Home() {
         </div>
       </section>
     </main>
-  )
+  );
 }
 

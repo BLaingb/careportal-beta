@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "~/components/ui/button"
-import { Badge } from "~/components/ui/badge"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { Textarea } from "~/components/ui/textarea"
-import { Check, MapPin, Phone, Star } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import { useState } from "react";
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Textarea } from "~/components/ui/textarea";
+import { Check, MapPin, Phone, Star } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 export default function Results() {
-  const [showContactForm, setShowContactForm] = useState(false)
+  const [showContactForm, setShowContactForm] = useState(false);
   const [contactFormData, setContactFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
-  })
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // This would normally come from a database or API based on form inputs
   const facility = {
@@ -35,28 +35,28 @@ export default function Results() {
     description:
       "Sunrise Senior Living provides high-quality stationary care services in a comfortable, home-like environment. Our dedicated staff is available 24/7 to provide personalized care tailored to each resident's unique needs.",
     image: "/placeholder.svg?height=600&width=800",
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setContactFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Here you would normally send the data to your backend
-    console.log("Form submitted:", contactFormData)
-    setIsSubmitted(true)
-  }
+    console.log("Form submitted:", contactFormData);
+    setIsSubmitted(true);
+  };
 
   const isFormValid = () => {
     return (
       contactFormData.name.trim() !== "" && contactFormData.email.trim() !== "" && contactFormData.phone.trim() !== ""
-    )
-  }
+    );
+  };
 
   return (
     <main className="flex-1 py-12">
@@ -231,6 +231,6 @@ export default function Results() {
         </div>
       </div>
     </main>
-  )
+  );
 }
 

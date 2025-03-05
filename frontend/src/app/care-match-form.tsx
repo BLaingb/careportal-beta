@@ -1,58 +1,62 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Label } from "~/components/ui/label"
-import { RadioGroup } from "~/components/ui/radio-group"
-import { ArrowRight, Check, Bed, Activity, Sun } from "lucide-react"
-import { useRouter } from "next/navigation"
-
+import { useState } from "react";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { RadioGroup } from "~/components/ui/radio-group";
+import { ArrowRight, Check, Bed, Activity, Sun } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { usePostHog } from 'posthog-js/react';
 export default function CareMatchForm() {
 
-  const router = useRouter()
-  const [step, setStep] = useState(1)
+  const router = useRouter();
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     patientName: "",
     careType: "",
     zipCode: "",
-  })
+  });
+  const posthog = usePostHog();
 
   const updateFormData = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const nextStep = () => {
-    setStep((prev) => prev + 1)
-  }
+    console.log('nextStep', step);
+    posthog.capture('care_match_form_step_changed', { step: step + 1, method: 'next' });
+    setStep((prev) => prev + 1);
+  };
 
   const prevStep = () => {
-    setStep((prev) => prev - 1)
-  }
+    posthog.capture('care_match_form_step_changed', { step: step - 1, method: 'prev' });
+    setStep((prev) => prev - 1);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    router.push("/results")
-  }
+    e.preventDefault();
+    router.push("/results");
+  };
 
   const isStepComplete = () => {
     switch (step) {
       case 1:
-        return formData.patientName.trim() !== ""
+        return formData.patientName.trim() !== "";
       case 2:
-        return formData.careType !== ""
+        return formData.careType !== "";
       case 3:
-        return formData.zipCode.trim() !== ""
+        return formData.zipCode.trim() !== "";
       default:
-        return false
+        return false;
     }
-  }
+  };
 
   const handleCareTypeSelect = (value: string) => {
-    updateFormData("careType", value)
-  }
+    updateFormData("careType", value);
+  };
   return (
     <div className="flex items-center justify-center">
       <div className="w-full max-w-md rounded-lg border bg-white p-6 shadow-lg">
@@ -235,5 +239,5 @@ export default function CareMatchForm() {
         </form>
       </div>
     </div>
-  )
+  );
 }
