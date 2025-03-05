@@ -6,8 +6,6 @@ from app.core.config import settings
 
 # from app.core.security import oauth2_scheme
 from app.modules.admin.routes import router as admin_router
-from app.modules.auth.sessions.routes import router as auth_router
-from app.modules.auth.users.routes import router as users_router
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -30,6 +28,4 @@ if settings.all_cors_origins:
         allow_headers=["*"],
     )
 
-app.include_router(users_router, prefix=settings.API_V1_STR)
-app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)

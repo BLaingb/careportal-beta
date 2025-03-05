@@ -22,8 +22,6 @@ from sqlmodel import SQLModel  # noqa
 from app.core.config import settings # noqa
 
 # Import all models from each module
-from app.modules.auth.users.models import User  # noqa
-from app.modules.auth.sessions.models import Session  # noqa
 target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
