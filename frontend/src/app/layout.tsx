@@ -1,36 +1,24 @@
-import "~/styles/globals.css"
+import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { ThemeProvider } from "~/components/theme-provider"
-import type React from "react"
-import Providers from "./_providers/providers"
-import { Toaster } from "~/components/ui/toaster"
+import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: "CarePortal - Find the Perfect Care Facility",
-    description: "CarePortal helps you find the perfect care facility based on your unique needs and preferences.",
+  title: "CarePortal - Find the Perfect Care Facility",
+  description: "CarePortal helps you find the perfect care facility based on your unique needs and preferences.",
 }
 
 export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={inter.className}>
-                <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-                    <Providers>
-                        <div className="min-h-screen bg-gradient-to-b from-background to-secondary">
-                            {children}
-                        </div>
-                        <Toaster />
-                    </Providers>
-                </ThemeProvider>
-            </body>
-        </html>
-    )
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
 }
 

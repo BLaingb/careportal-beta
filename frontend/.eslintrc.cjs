@@ -7,6 +7,7 @@ const config = {
   "plugins": [
     "@typescript-eslint"
   ],
+  "ignorePatterns": ["node_modules", "dist", "build", "public", "tailwind.config.js"],
   "extends": [
     "next/core-web-vitals",
     "plugin:@typescript-eslint/recommended-type-checked",
