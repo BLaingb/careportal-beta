@@ -3,11 +3,12 @@ import { Badge } from "~/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
 import { ArrowLeft, Calendar, Check, Heart, MapPin, Phone, Star } from "lucide-react"
 import Link from "next/link"
-
-export default function FacilityDetail({ params }: { params: { id: string } }) {
+import Image from "next/image"
+export default async function FacilityDetail({ params }: { params: Promise<{ id: string }> }) {
   // This would normally come from a database or API based on the ID
+  const { id } = await params;
   const facility = {
-    id: params.id,
+    id,
     name: "Sunrise Senior Living",
     type: "Stationary Care",
     rating: 4.8,
@@ -76,10 +77,12 @@ export default function FacilityDetail({ params }: { params: { id: string } }) {
       </header>
       <main className="flex-1">
         <div className="relative h-64 w-full bg-gray-200 md:h-96">
-          <img
-            src={facility.images[0] || "/placeholder.svg"}
+          <Image
+            src={facility.images[0] ?? "/placeholder.svg"}
             alt={facility.name}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
+            priority
           />
           <div className="absolute inset-0 bg-black/30"></div>
           <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -117,9 +120,11 @@ export default function FacilityDetail({ params }: { params: { id: string } }) {
                       <span>{facility.address}</span>
                     </div>
                     <div className="mt-4 h-64 w-full overflow-hidden rounded-lg bg-gray-200">
-                      <img
+                      <Image
                         src="/placeholder.svg?height=300&width=600"
                         alt="Map location"
+                        width={600}
+                        height={300}
                         className="h-full w-full object-cover"
                       />
                     </div>
@@ -154,9 +159,11 @@ export default function FacilityDetail({ params }: { params: { id: string } }) {
                   <div className="grid gap-4 sm:grid-cols-2">
                     {facility.images.map((image, index) => (
                       <div key={index} className="overflow-hidden rounded-lg">
-                        <img
+                        <Image
                           src={image || "/placeholder.svg"}
                           alt={`${facility.name} - Photo ${index + 1}`}
+                          width={600}
+                          height={256}
                           className="h-64 w-full object-cover transition-transform hover:scale-105"
                         />
                       </div>
@@ -191,7 +198,7 @@ export default function FacilityDetail({ params }: { params: { id: string } }) {
                   <div className="space-y-4">
                     {facility.testimonials.map((testimonial, index) => (
                       <div key={index} className="rounded-lg border p-4">
-                        <p className="italic">"{testimonial.text}"</p>
+                        <p className="italic">&quot;{testimonial.text}&quot;</p>
                         <div className="mt-2">
                           <p className="font-medium">{testimonial.name}</p>
                           <p className="text-sm text-gray-500">{testimonial.relationship}</p>
