@@ -5,11 +5,6 @@ import React, { useEffect } from 'react';
 import SuspendedPostHogPageView from '~/components/posthog-page-view';
 import { env } from '~/env';
 
-// const SuspendedPostHogPageView = dynanmicLoader(
-//     () => import("~/components/posthog-page-view"),
-//     { ssr: false },
-// )
-
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
