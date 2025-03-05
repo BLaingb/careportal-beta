@@ -9,8 +9,8 @@ import { Toaster } from "~/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: "ProjectName - <ProjectName>",
-    description: "",
+    title: "CarePortal - Find the Perfect Care Facility",
+    description: "CarePortal helps you find the perfect care facility based on your unique needs and preferences.",
 }
 
 export default function RootLayout({

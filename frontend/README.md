@@ -1,6 +1,6 @@
-# ProjectName Frontend
+# CarePortal Beta Frontend
 
-ProjectName project bootstrapped with `create-t3-app`.
+CarePortal Beta project bootstrapped with `create-t3-app`.
 
 ## Running Locally
 

@@ -1,7 +1,7 @@
 services:
   api:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
-    container_name: projectname-api
+    container_name: careportal-beta-api
     restart: no
     networks:
       - default

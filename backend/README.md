@@ -1,4 +1,4 @@
-# ProjectName - Backend
+# CarePortal Beta - Backend
 
 ## Requirements
 
