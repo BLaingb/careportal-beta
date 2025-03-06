@@ -14,6 +14,7 @@ import { ArrowRight, Check, Bed, Activity, Sun } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { usePostHog } from 'posthog-js/react';
 import events from "~/lib/analytics/events";
+import { getNearestFacility } from "~/lib/facilities";
 
 const careMatchSchema = z.object({
   patientName: z.string().min(2, "Name must be at least 2 characters"),
@@ -49,17 +50,36 @@ export default function CareMatchForm() {
     const event = events.care_match_form_step_completed;
     const value = step === 1 ? patientName : step === 2 ? careType : zipCode;
     posthog.capture(event.name, event.properties({ step: step + 1, stepName, value }));
-    setStep((prev) => prev + 1);
+    // No day care facilities are participating in the beta, so we can skip directly to results
+    // No need to check for zip code
+    // May remove this if we want to get analytics on zip code interest for day care facilities
+    if (step === 2 && careType === "daycare") {
+      onSubmit(form.getValues());
+    } else {
+      setStep((prev) => prev + 1);
+    }
   };
 
   const prevStep = () => {
     setStep((prev) => prev - 1);
   };
 
+  const searchNearestFacility = async (data: CareMatchFormData) => {
+    const facility = await getNearestFacility(data.careType, data.zipCode);
+    if (facility) {
+      router.push(`/results/${facility.slug}`);
+    } else {
+      router.push("/results/not-found");
+    }
+  };
+
   const onSubmit = (data: CareMatchFormData) => {
     const event = events.care_match_form_submitted;
     posthog.capture(event.name, event.properties(data));
-    router.push("/results");
+    searchNearestFacility(data).catch((error) => {
+      // TODO: Toast and posthog error event
+      console.error(error);
+    });
   };
 
   const isStepComplete = () => {    
