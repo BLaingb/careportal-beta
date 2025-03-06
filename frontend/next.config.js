@@ -23,7 +23,18 @@ const config = {
         ];
       },
       // This is required to support PostHog trailing slash API requests
-      skipTrailingSlashRedirect: true, 
+      skipTrailingSlashRedirect: true,
+      images: {
+        remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: 'placehold.co'
+          }
+        ],
+        // Needed for placehold.co images, which are SVGs
+        // Would remove this in production
+        dangerouslyAllowSVG: true,
+      },
 };
 
 export default config;

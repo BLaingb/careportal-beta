@@ -1,28 +1,13 @@
-import { MapPin, Phone } from "lucide-react";
+import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
-import ContactCta from "../contact-cta";
-
+import ContactCta from "./contact-cta";
+import { getFacilityBySlug } from "~/lib/facilities";
 export default async function Results({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   // This would normally come from a database or API based on form inputs
-  const facility = {
-    id: 1,
-    name: "Sunrise Senior Living",
-    type: "Stationary Care",
-    rating: 4.8,
-    reviews: 124,
-    address: "123 Care Lane, Portland, OR 97201",
-    phone: "(503) 555-1234",
-    matchScore: 98,
-    amenities: ["24/7 Staff", "Private Rooms", "Garden", "Pet Friendly"],
-    description:
-      "Sunrise Senior Living provides high-quality stationary care services in a comfortable, home-like environment. Our dedicated staff is available 24/7 to provide personalized care tailored to each resident's unique needs.",
-    image: "/placeholder.svg?height=600&width=800",
-  };
-
-  
+  const facility = await getFacilityBySlug(slug);
 
   return (
     <main className="flex-1 py-12">
@@ -40,13 +25,19 @@ export default async function Results({ params }: { params: Promise<{ slug: stri
               <div className="flex flex-col justify-between">
                 <div>
                   <h2 className="text-3xl font-bold text-[#6c5ce7]">{facility.name}</h2>
-                  <p className="text-lg text-gray-600">{facility.type}</p>
+                  <div className="flex gap-2">
+                    {facility.has_stationary_care && (
+                      <Badge variant="outline" className="bg-[#f8f7ff]">Stationary Care</Badge>
+                    )}
+                    {facility.has_ambulatory_care && (
+                      <Badge variant="outline" className="bg-[#f8f7ff]">Ambulatory Care</Badge>
+                    )}
+                    {facility.has_day_care && (
+                      <Badge variant="outline" className="bg-[#f8f7ff]">Day Care</Badge>
+                    )}
+                  </div>
 
                   <div className="mt-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-5 w-5 text-[#6c5ce7]" />
-                      <span>{facility.phone}</span>
-                    </div>
                     <div className="flex items-start gap-2">
                       <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#6c5ce7]" />
                       <span>{facility.address}</span>
@@ -54,34 +45,78 @@ export default async function Results({ params }: { params: Promise<{ slug: stri
                   </div>
 
                   <div className="mt-6">
-                    <h3 className="text-xl font-bold text-[#6c5ce7]">About This Facility</h3>
-                    <p className="mt-2 text-gray-600">{facility.description}</p>
+                    <h3 className="text-xl font-bold text-[#6c5ce7]">Care Services</h3>
+                    <div className="mt-2 space-y-2">
+                      {facility.has_stationary_care && (
+                        <div className="flex items-center gap-2">
+                          <div className="mt-0.5 h-2 w-2 rounded-full bg-[#6c5ce7]" />
+                          <div>
+                            <span className="font-medium">Stationary Care:</span> 
+                            <span className="text-gray-600"> 24/7 comprehensive care with accommodation</span>
+                          </div>
+                        </div>
+                      )}
+                      {facility.has_ambulatory_care && (
+                        <div className="flex items-center gap-2">
+                          <div className="mt-0.5 h-2 w-2 rounded-full bg-[#6c5ce7]" />
+                          <div>
+                            <span className="font-medium">Ambulatory Care:</span> 
+                            <span className="text-gray-600"> Professional care services in your home</span>
+                          </div>
+                        </div>
+                      )}
+                      {facility.has_day_care && (
+                        <div className="flex items-center gap-2">
+                          <div className="mt-0.5 h-2 w-2 rounded-full bg-[#6c5ce7]" />
+                          <div>
+                            <span className="font-medium">Day Care:</span> 
+                            <span className="text-gray-600"> Supportive care during daytime hours</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="mt-6">
-                    <h3 className="text-xl font-bold text-[#6c5ce7]">Key Amenities</h3>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {facility.amenities.map((amenity) => (
-                        <Badge key={amenity} variant="outline" className="bg-[#f8f7ff]">
-                          {amenity}
-                        </Badge>
-                      ))}
+                    <h3 className="text-xl font-bold text-[#6c5ce7]">Location Information</h3>
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="mt-0.5 h-2 w-2 rounded-full bg-[#6c5ce7]" />
+                        <div>
+                          <span className="font-medium">ZIP Code:</span> 
+                          <span className="text-gray-600"> {facility.zip_code}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="mt-0.5 h-2 w-2 rounded-full bg-[#6c5ce7]" />
+                        <div>
+                          <span className="font-medium">Service Area:</span> 
+                          <span className="text-gray-600"> ZIP codes {facility.from_zip_code} to {facility.to_zip_code}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="mt-0.5 h-2 w-2 rounded-full bg-[#6c5ce7]" />
+                        <div>
+                          <span className="font-medium">Availability:</span> 
+                          <span className="text-gray-600"> {facility.available_capacity ? "Currently accepting new patients" : "Limited availability - contact for details"}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Contact CTA */}
-                <ContactCta />
+                <ContactCta facility={facility} />
               </div>
 
               {/* Facility Image - Right Side */}
               <div className="relative h-full">
                 <div className="sticky top-6 overflow-hidden rounded-lg shadow-lg">
                   <Image
-                    src={facility.image || "/placeholder.svg"}
+                    src={facility.image_url ?? "/placeholder.svg"}
                     alt={facility.name}
-                    width={500}
-                    height={300}
+                    width={600}
+                    height={400}
                     className="h-full w-full object-cover"
                   />
                 </div>

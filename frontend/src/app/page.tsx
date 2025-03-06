@@ -12,7 +12,7 @@ export default function Home() {
         <div className="container relative">
           <div className="grid gap-6 md:grid-cols-2">
             {/* Left side - Fixed content */}
-            <div className="flex flex-col justify-center space-y-4 py-12 md:top-6 md:h-fit md:py-24">
+            <div className="flex flex-col justify-center space-y-4 py-4 md:top-6 md:h-fit md:py-24">
               <h1 className="text-4xl font-bold tracking-tighter text-[#6c5ce7] sm:text-5xl md:text-6xl">
                 Find the perfect care facility for your needs
               </h1>

@@ -18,7 +18,7 @@ import { getNearestFacility } from "~/lib/facilities";
 
 const careMatchSchema = z.object({
   patientName: z.string().min(2, "Name must be at least 2 characters"),
-  careType: z.enum(["stationary", "ambulatory", "daycare"], {
+  careType: z.enum(["stationary_care", "ambulatory_care", "day_care"], {
     required_error: "Please select a care type",
   }),
   zipCode: z.string().regex(/^\d{5}$/, "Please enter a valid 5-digit zip code"),
@@ -53,7 +53,7 @@ export default function CareMatchForm() {
     // No day care facilities are participating in the beta, so we can skip directly to results
     // No need to check for zip code
     // May remove this if we want to get analytics on zip code interest for day care facilities
-    if (step === 2 && careType === "daycare") {
+    if (step === 2 && careType === "day_care") {
       onSubmit(form.getValues());
     } else {
       setStep((prev) => prev + 1);
@@ -67,9 +67,9 @@ export default function CareMatchForm() {
   const searchNearestFacility = async (data: CareMatchFormData) => {
     const facility = await getNearestFacility(data.careType, data.zipCode);
     if (facility) {
-      router.push(`/results/${facility.slug}`);
+      router.push(`/results/${facility.slug}?careType=${data.careType}&zipCode=${data.zipCode}&patientName=${data.patientName}`);
     } else {
-      router.push("/results/not-found");
+      router.push(`/results/not-found?careType=${data.careType}&zipCode=${data.zipCode}&patientName=${data.patientName}`);
     }
   };
 
@@ -174,13 +174,13 @@ export default function CareMatchForm() {
                     {/* Stationary Care Option */}
                     <label
                       className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
-                        careType === "stationary"
+                        careType === "stationary_care"
                           ? "border-[#6c5ce7] bg-[#f8f7ff]"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
-                      htmlFor="stationary"
+                      htmlFor="stationary_care"
                     >
-                      <RadioGroupItem value="stationary" id="stationary" className="sr-only" />
+                      <RadioGroupItem value="stationary_care" id="stationary_care" className="sr-only" />
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#f8f7ff]">
                         <Bed className="h-5 w-5 text-[#6c5ce7]" />
                       </div>
@@ -193,13 +193,13 @@ export default function CareMatchForm() {
                     {/* Ambulatory Care Option */}
                     <label
                       className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
-                        careType === "ambulatory"
+                        careType === "ambulatory_care"
                           ? "border-[#6c5ce7] bg-[#f8f7ff]"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
-                      htmlFor="ambulatory"
+                      htmlFor="ambulatory_care"
                     >
-                      <RadioGroupItem value="ambulatory" id="ambulatory" className="sr-only" />
+                      <RadioGroupItem value="ambulatory_care" id="ambulatory_care" className="sr-only" />
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#f8f7ff]">
                         <Activity className="h-5 w-5 text-[#6c5ce7]" />
                       </div>
@@ -212,13 +212,13 @@ export default function CareMatchForm() {
                     {/* Day Care Option */}
                     <label
                       className={`relative flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
-                        careType === "daycare"
+                        careType === "day_care"
                           ? "border-[#6c5ce7] bg-[#f8f7ff]"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
-                      htmlFor="daycare"
+                      htmlFor="day_care"
                     >
-                      <RadioGroupItem value="daycare" id="daycare" className="sr-only" />
+                      <RadioGroupItem value="day_care" id="day_care" className="sr-only" />
                       <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[#f8f7ff]">
                         <Sun className="h-5 w-5 text-[#6c5ce7]" />
                       </div>
