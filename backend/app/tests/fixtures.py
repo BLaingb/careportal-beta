@@ -1,12 +1,8 @@
 import pytest
-from sqlmodel import Session as SQLSession, SQLModel, create_engine
-from app.modules.auth.users.models import User
-from app.modules.auth.sessions.models import Session
-from app.modules.households.models import Household, HouseholdMember
-from app.modules.financial.accounts.models import Account
-from app.modules.financial.categories.models import Category
-from app.modules.financial.transactions.models import Transaction
-from app.modules.financial.budgeting.models import Budget
+from sqlmodel import Session as SQLSession
+from sqlmodel import SQLModel, create_engine
+
+from app.modules.care_facilities.models import CareFacility  # noqa
 
 
 @pytest.fixture
