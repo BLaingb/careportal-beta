@@ -16,7 +16,6 @@ down_revision = '080f5913eb0a'
 branch_labels = None
 depends_on = None
 
-
 def upgrade():
     # Create compound index on care facilities
     # for queries like:
@@ -41,4 +40,6 @@ def upgrade():
 
 
 def downgrade():
-    pass
+    op.drop_index('ix_care_facility_has_stationary_care_zip_code', table_name='carefacility')
+    op.drop_index('ix_care_facility_has_day_care_zip_code', table_name='carefacility')
+    op.drop_index('ix_care_facility_has_ambulatory_care_zip_code', table_name='carefacility')
