@@ -35,9 +35,14 @@ class Settings(BaseSettings):
     FRONTEND_HOST: str = "http://localhost:3000"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
 
+    ENABLE_ADMIN_ROUTES: bool = False
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
     ] = []
+
+    ZIP_CODE_RANGE_SEARCH: int = 3_000
 
     @computed_field  # type: ignore[prop-decorator]
     @property
