@@ -88,63 +88,63 @@ export default function ContactCta({ children, context, additionalEventData = {}
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <h3 className="mb-4 text-xl font-bold text-[#6c5ce7]">Contact Information</h3>
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Your Name</Label>
-              <Input
-                id="name"
-                placeholder="Enter your full name"
-                {...form.register("name")}
-              />
-              {form.formState.errors.name && (
-                <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email address"
-                {...form.register("email")}
-              />
-              {form.formState.errors.email && (
-                <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="Enter your phone number"
-                {...form.register("phone")}
-              />
-              {form.formState.errors.phone && (
-                <p className="text-sm text-red-500">{form.formState.errors.phone.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="message">Additional Information (Optional)</Label>
-              <Textarea
-                id="message"
-                placeholder="Tell us more about your care needs"
-                {...form.register("message")}
-                rows={3}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={() => setShowContactForm(false)}>
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-[#6c5ce7] hover:bg-[#5b4bc4]"
-                disabled={form.formState.isSubmitting}
-              >
-                Submit
-              </Button>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="name">Your Name</Label>
+            <Input
+              id="name"
+              placeholder="Enter your full name"
+              {...form.register("name")}
+            />
+            {form.formState.errors.name && (
+              <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+            )}
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Enter your email address"
+              {...form.register("email")}
+            />
+            {form.formState.errors.email && (
+              <p className="text-sm text-red-500">{form.formState.errors.email.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="Enter your phone number"
+              {...form.register("phone")}
+            />
+            {form.formState.errors.phone && (
+              <p className="text-sm text-red-500">{form.formState.errors.phone.message}</p>
+            )}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="message">Additional Information (Optional)</Label>
+            <Textarea
+              id="message"
+              placeholder="Tell us more about your care needs"
+              {...form.register("message")}
+              rows={3}
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={() => setShowContactForm(false)}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1 bg-[#6c5ce7] hover:bg-[#5b4bc4]"
+              disabled={form.formState.isSubmitting}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
         </form>
       )}
 
