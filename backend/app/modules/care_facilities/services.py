@@ -2,7 +2,11 @@ from fastapi import BackgroundTasks
 
 from app.core.config import settings
 from app.modules.care_facilities.repository import CareFacilityRepository
-from app.modules.care_facilities.schemas import CareType
+from app.modules.care_facilities.schemas import (
+    CareFacilityResponse,
+    CareFacilitySearchResponse,
+    CareType,
+)
 
 
 class CareFacilityService:
@@ -28,8 +32,13 @@ class CareFacilityService:
         pass
 
     async def find_best_match(
-        self, zip_code: int, care_type: CareType, background_tasks: BackgroundTasks
-    ):
+        self,
+        zip_code: int | None,
+        care_type: CareType,
+        background_tasks: BackgroundTasks,
+    ) -> CareFacilitySearchResponse | None:
+        if not zip_code:
+            return None
         facilities = await self.repository.get_by_care_type_and_zip_code(
             care_type, zip_code, settings.ZIP_CODE_RANGE_SEARCH
         )
@@ -59,3 +68,6 @@ class CareFacilityService:
                 care_type,
             )
             return None
+
+    async def get_by_slug(self, slug: str) -> CareFacilityResponse | None:
+        return await self.repository.get_by_slug(slug)
