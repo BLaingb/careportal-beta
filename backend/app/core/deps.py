@@ -3,8 +3,10 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import APIKeyHeader
+from posthog import Posthog
 from sqlmodel import Session
 
+from app.core.analytics import PosthogAnalytics
 from app.core.config import settings
 from app.core.db import engine
 from app.core.email import EmailService
@@ -38,3 +40,14 @@ async def validate_admin_api_key(api_key: str = Security(api_key_header)) -> Non
 
 
 AdminAPIKeyDep = Annotated[None, Depends(validate_admin_api_key)]
+
+
+def get_posthog() -> PosthogAnalytics | None:
+    if not settings.POSTHOG_API_KEY or not settings.POSTHOG_HOST:
+        return None
+    return PosthogAnalytics(
+        Posthog(settings.POSTHOG_API_KEY, host=settings.POSTHOG_HOST)
+    )
+
+
+PostHogDep = Annotated[Posthog | None, Depends(get_posthog)]
