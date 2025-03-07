@@ -3,7 +3,10 @@ from typing import Annotated
 from fastapi import Depends
 
 from app.core.deps import SessionDep
-from app.modules.care_facilities.repository import CareFacilityRepository
+from app.modules.care_facilities.repository import (
+    CareFacilityContactRequestRepository,
+    CareFacilityRepository,
+)
 from app.modules.care_facilities.services import CareFacilityService
 
 
@@ -16,10 +19,23 @@ CareFacilityRepositoryDep = Annotated[
 ]
 
 
+def get_care_facility_contact_request_repository(
+    db: SessionDep,
+) -> CareFacilityContactRequestRepository:
+    return CareFacilityContactRequestRepository(db)
+
+
+CareFacilityContactRequestRepositoryDep = Annotated[
+    CareFacilityContactRequestRepository,
+    Depends(get_care_facility_contact_request_repository),
+]
+
+
 def get_care_facility_service(
     repository: CareFacilityRepositoryDep,
+    contact_request_repository: CareFacilityContactRequestRepositoryDep,
 ) -> CareFacilityService:
-    return CareFacilityService(repository)
+    return CareFacilityService(repository, contact_request_repository)
 
 
 CareFacilityServiceDep = Annotated[

@@ -58,3 +58,30 @@ export const getFacilityBySlug = async (slug: string): Promise<Facility> => {
   const data = await response.json() as Facility;
   return FacilitySchema.parse(data);
 };
+
+export const postContactForm = async (
+  careType: CareType | 'unknown',
+  name: string,
+  email: string,
+  phone: string,
+  message?: string,
+  facilityId?: string,
+) => {
+  const response = await fetch(`${env.NEXT_PUBLIC_BACKEND_URL}/api/v1/care-facilities/contact-request`, {
+    method: "POST",
+    body: JSON.stringify({
+      care_facility_id: facilityId,
+      care_type: careType,
+      name,
+      email,
+      phone,
+      message,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!response.ok) {
+    throw new Error("Failed to send contact form");
+  }
+};

@@ -55,3 +55,31 @@ class CareFacilitySearchResponse(BaseModel):
     distance: int
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CareFacilityContactRequestBase(BaseModel):
+    name: str
+    email: str
+    phone: str
+    care_type: CareType
+    message: str
+    care_facility_id: UUID | None = None
+
+
+class CareFacilityContactRequestCreate(CareFacilityContactRequestBase):
+    pass
+
+
+class CareFacilityContactRequestUpdate(CareFacilityContactRequestBase):
+    name: str | None = None
+    email: str | None = None
+    phone: str | None = None
+    care_type: CareType | None = None
+    care_facility_id: UUID | None = None
+    message: str | None = None
+
+
+class CareFacilityContactRequestResponse(CareFacilityContactRequestBase):
+    id: UUID
+
+    model_config = ConfigDict(from_attributes=True)

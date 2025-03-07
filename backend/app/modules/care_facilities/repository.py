@@ -3,8 +3,11 @@ from sqlmodel import Session, select
 
 from app.core.base_repository import BaseRepository
 from app.core.logger import get_logger
-from app.modules.care_facilities.models import CareFacility
+from app.modules.care_facilities.models import CareFacility, CareFacilityContactRequest
 from app.modules.care_facilities.schemas import (
+    CareFacilityContactRequestCreate,
+    CareFacilityContactRequestResponse,
+    CareFacilityContactRequestUpdate,
     CareFacilityCreate,
     CareFacilityResponse,
     CareFacilitySearchResponse,
@@ -74,3 +77,15 @@ class CareFacilityRepository(
     async def get_by_slug(self, slug: str) -> CareFacilityResponse | None:
         statement = select(CareFacility).where(CareFacility.slug == slug)
         return self.db.exec(statement).first()
+
+
+class CareFacilityContactRequestRepository(
+    BaseRepository[
+        CareFacilityContactRequest,
+        CareFacilityContactRequestCreate,
+        CareFacilityContactRequestUpdate,
+        CareFacilityContactRequestResponse,
+    ]
+):
+    def __init__(self, db: Session):
+        super().__init__(CareFacilityContactRequest, db)
