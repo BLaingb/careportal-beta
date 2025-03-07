@@ -1,9 +1,22 @@
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Index, SQLModel
 
 
 class CareFacility(SQLModel, table=True):
+    __table_args__ = (
+        Index(
+            "ix_care_facility_has_stationary_care_zip_code",
+            "has_stationary_care",
+            "zip_code",
+        ),
+        Index("ix_care_facility_has_day_care_zip_code", "has_day_care", "zip_code"),
+        Index(
+            "ix_care_facility_has_ambulatory_care_zip_code",
+            "has_ambulatory_care",
+            "zip_code",
+        ),
+    )
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     name: str = Field(max_length=100)
     address: str = Field(max_length=255)
@@ -15,6 +28,4 @@ class CareFacility(SQLModel, table=True):
     zip_code: int = Field(ge=0, le=99999, index=True)
     available_capacity: bool = Field(default=False)
     slug: str = Field(unique=True)
-
-    # Compound indexes found in alembic migrations
-    # /app/alembic/versions/20250306_140647_427b733280ea_care_facilities_compound_indexes.py
+    image_url: str | None = Field(default=None)

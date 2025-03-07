@@ -5,7 +5,7 @@ from fastapi import BackgroundTasks
 
 from app.core.config import settings
 from app.modules.care_facilities.repository import CareFacilityRepository
-from app.modules.care_facilities.schemas import CareFacilityResponse
+from app.modules.care_facilities.schemas import CareFacilitySearchResponse
 from app.modules.care_facilities.services import CareFacilityService
 from app.tests.fixtures import db_engine, db_session  # noqa
 
@@ -38,7 +38,7 @@ def facility_response_factory():
         slug="test-facility",
         distance=0,
     ):
-        return CareFacilityResponse(
+        return CareFacilitySearchResponse(
             id=id_val or uuid4(),
             name=name,
             address=address,

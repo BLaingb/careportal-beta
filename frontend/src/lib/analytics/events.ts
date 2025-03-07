@@ -13,6 +13,24 @@ const events = {
       careType,
       zipCode
     })
+  },
+  contact_form_opened: {
+    name: 'contact_form_opened',
+    properties: ({ context, facilityName, careType, zipCode }: { context: string, facilityName?: string, careType?: string, zipCode?: string }) => ({
+      context,
+      facilityName,
+      careType,
+      zipCode
+    })
+  },
+  contact_form_submitted: {
+    name: 'contact_form_submitted',
+    properties: ({ context, facilityName, careType, zipCode }: { context: string, facilityName?: string, careType?: string, zipCode?: string }) => ({
+      context,
+      facilityName,
+      careType,
+      zipCode
+    })
   }
 } as const;
 

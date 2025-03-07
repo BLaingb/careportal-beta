@@ -19,6 +19,7 @@ class CareFacility(BaseModel):
     zip_code: int
     available_capacity: bool
     slug: str
+    image_url: str | None = None
 
 
 class CareFacilityCreate(CareFacility):
@@ -35,9 +36,16 @@ class CareFacilityUpdate(CareFacility):
     to_zip_code: int | None = None
     zip_code: int | None = None
     available_capacity: bool | None = None
+    image_url: str | None = None
 
 
-class CareFacilityResponse(BaseModel):
+class CareFacilityResponse(CareFacility):
+    id: UUID
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CareFacilitySearchResponse(BaseModel):
     id: UUID
     name: str
     address: str

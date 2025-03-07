@@ -3,7 +3,7 @@ import pytest
 from app.modules.care_facilities.models import CareFacility
 from app.modules.care_facilities.repository import CareFacilityRepository
 from app.modules.care_facilities.schemas import (
-    CareFacilityResponse,
+    CareFacilitySearchResponse,
 )
 from app.tests.fixtures import db_engine, db_session  # noqa
 
@@ -169,7 +169,7 @@ class TestCareFacilityRepository:
         facility = results[0]
 
         # Check that the response has all expected fields
-        assert isinstance(facility, CareFacilityResponse)
+        assert isinstance(facility, CareFacilitySearchResponse)
         assert facility.id is not None
         assert facility.name == "Stationary Care Facility"
         assert facility.address == "123 Main St"
