@@ -3,12 +3,22 @@ from fastapi.responses import JSONResponse
 
 from app.modules.care_facilities.deps import CareFacilityServiceDep
 from app.modules.care_facilities.schemas import (
+    CareFacilityContactRequestCreate,
+    CareFacilityContactRequestResponse,
     CareFacilityResponse,
     CareFacilitySearchResponse,
     CareType,
 )
 
 care_facilities_router = APIRouter(prefix="/care-facilities", tags=["care-facilities"])
+
+
+@care_facilities_router.post("/contact-request")
+async def create_care_facility_contact_request(
+    request: CareFacilityContactRequestCreate,
+    service: CareFacilityServiceDep,
+) -> CareFacilityContactRequestResponse:
+    return await service.create_contact_request(request)
 
 
 @care_facilities_router.get("/nearest")

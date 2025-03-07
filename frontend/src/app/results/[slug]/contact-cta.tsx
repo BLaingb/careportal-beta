@@ -15,9 +15,12 @@ export default function FacilityContactCta({ facility }: { facility: Facility })
     <Suspense fallback={<div>{Content}</div>}>
       <ContactCta 
         context="facility_page"
+        facilityId={facility.id}
         additionalEventData={{ facilityName: facility.name }}
       >
+
       {Content}
+
       </ContactCta>
     </Suspense>
   );

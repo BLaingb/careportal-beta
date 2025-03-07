@@ -15,6 +15,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { usePostHog } from "posthog-js/react";
 import events from "~/lib/analytics/events";
 import { useSearchParams } from "next/navigation";
+import { postContactForm } from "~/lib/facilities";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -25,17 +26,26 @@ const contactFormSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
 
+const queryParamsSchema = z.object({
+  careType: z.enum(['stationary_care', 'ambulatory_care', 'day_care']).optional(),
+  zipCode: z.string().optional(),
+  patientName: z.string().optional(),
+});
+
+
 interface ContactCtaProps {
   children: React.ReactNode;
   context: string;
   additionalEventData?: Record<string, string>;
+  facilityId?: string;
 }
 
-export default function ContactCta({ children, context, additionalEventData = {} }: ContactCtaProps) {
+export default function ContactCta({ children, context, additionalEventData = {}, facilityId }: ContactCtaProps) {
   const searchParams = useSearchParams();
   const zipCode = searchParams.get("zipCode");
   const careType = searchParams.get("careType");
   const patientName = searchParams.get("patientName");
+  const queryParams = queryParamsSchema.safeParse({ careType, zipCode, patientName });
   const [showContactForm, setShowContactForm] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const posthog = usePostHog();
@@ -60,13 +70,25 @@ export default function ContactCta({ children, context, additionalEventData = {}
     });
   };
 
-  const onSubmit = (_data: ContactFormData) => {
+  const onSubmit = async (data: ContactFormData) => {
     posthog.capture(events.contact_form_submitted.name, {
       context,
       careType,
       zipCode,
       ...additionalEventData,
     });
+    try {
+      await postContactForm(
+        queryParams.data?.careType ?? 'unknown',
+        data.name,
+        data.email,
+        data.phone,
+        data.message,
+        facilityId
+      );
+    } catch (error) {
+      console.error(error);
+    }
     setIsSubmitted(true);
   };
 

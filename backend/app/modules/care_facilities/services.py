@@ -1,8 +1,13 @@
 from fastapi import BackgroundTasks
 
 from app.core.config import settings
-from app.modules.care_facilities.repository import CareFacilityRepository
+from app.modules.care_facilities.repository import (
+    CareFacilityContactRequestRepository,
+    CareFacilityRepository,
+)
 from app.modules.care_facilities.schemas import (
+    CareFacilityContactRequestCreate,
+    CareFacilityContactRequestResponse,
     CareFacilityResponse,
     CareFacilitySearchResponse,
     CareType,
@@ -10,8 +15,13 @@ from app.modules.care_facilities.schemas import (
 
 
 class CareFacilityService:
-    def __init__(self, repository: CareFacilityRepository):
+    def __init__(
+        self,
+        repository: CareFacilityRepository,
+        contact_request_repository: CareFacilityContactRequestRepository,
+    ):
         self.repository = repository
+        self.contact_request_repository = contact_request_repository
 
     async def __analytics_search_facilities_not_found(
         self, zip_code: int, zip_code_range: int, care_type: CareType
@@ -71,3 +81,8 @@ class CareFacilityService:
 
     async def get_by_slug(self, slug: str) -> CareFacilityResponse | None:
         return await self.repository.get_by_slug(slug)
+
+    async def create_contact_request(
+        self, request: CareFacilityContactRequestCreate
+    ) -> CareFacilityContactRequestResponse:
+        return self.contact_request_repository.create(request)

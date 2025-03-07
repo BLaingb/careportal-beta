@@ -1,6 +1,8 @@
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, Index, SQLModel
+from sqlmodel import Field, Index, Relationship, SQLModel, String
+
+from .schemas import CareType
 
 
 class CareFacility(SQLModel, table=True):
@@ -29,3 +31,20 @@ class CareFacility(SQLModel, table=True):
     available_capacity: bool = Field(default=False)
     slug: str = Field(unique=True)
     image_url: str | None = Field(default=None)
+
+    contact_requests: list["CareFacilityContactRequest"] = Relationship(
+        back_populates="care_facility"
+    )
+
+
+class CareFacilityContactRequest(SQLModel, table=True):
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    care_facility_id: UUID = Field(foreign_key="carefacility.id", nullable=True)
+    care_facility: "CareFacility" = Relationship(
+        back_populates="contact_requests",
+    )
+    name: str = Field(max_length=100)
+    email: str = Field(max_length=100)
+    phone: str = Field(max_length=100)
+    care_type: CareType = Field(sa_type=String(length=20))
+    message: str = Field(max_length=255, nullable=True)
