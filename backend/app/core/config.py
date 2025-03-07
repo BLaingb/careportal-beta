@@ -44,6 +44,9 @@ class Settings(BaseSettings):
 
     ZIP_CODE_RANGE_SEARCH: int = 3_000
 
+    POSTHOG_API_KEY: str | None = None
+    POSTHOG_HOST: str | None = None
+
     @computed_field  # type: ignore[prop-decorator]
     @property
     def all_cors_origins(self) -> list[str]:

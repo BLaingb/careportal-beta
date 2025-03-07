@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from app.core.deps import SessionDep
+from app.core.deps import PostHogDep, SessionDep
 from app.modules.care_facilities.repository import (
     CareFacilityContactRequestRepository,
     CareFacilityRepository,
@@ -34,8 +34,9 @@ CareFacilityContactRequestRepositoryDep = Annotated[
 def get_care_facility_service(
     repository: CareFacilityRepositoryDep,
     contact_request_repository: CareFacilityContactRequestRepositoryDep,
+    posthog: PostHogDep,
 ) -> CareFacilityService:
-    return CareFacilityService(repository, contact_request_repository)
+    return CareFacilityService(repository, contact_request_repository, posthog)
 
 
 CareFacilityServiceDep = Annotated[

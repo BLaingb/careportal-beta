@@ -25,6 +25,7 @@ dependencies = [
     "fastapi-mail>=1.4.2",
     "fastapi-utils>=0.8.0",
     "colorama>=0.4.6",
+    "posthog>=3.19.0",
 ]
 
 [tool.uv]

@@ -1,5 +1,6 @@
 from fastapi import BackgroundTasks
 
+from app.core.analytics import PosthogAnalytics
 from app.core.config import settings
 from app.modules.care_facilities.repository import (
     CareFacilityContactRequestRepository,
@@ -19,27 +20,51 @@ class CareFacilityService:
         self,
         repository: CareFacilityRepository,
         contact_request_repository: CareFacilityContactRequestRepository,
+        posthog: PosthogAnalytics,
     ):
         self.repository = repository
         self.contact_request_repository = contact_request_repository
+        self.posthog = posthog
 
     async def __analytics_search_facilities_not_found(
-        self, zip_code: int, zip_code_range: int, care_type: CareType
+        self, zip_code: int, care_type: CareType
     ):
-        # TODO: Implement posthog analytics
-        pass
+        self.posthog.track_event(
+            uid=None,
+            event_name="care_facility_search_not_found",
+            properties={
+                "zip_code": zip_code,
+                "care_type": care_type,
+            },
+        )
 
     async def __analytics_search_facilities_not_available(
-        self, zip_code: int, zip_code_range: int, care_type: CareType
+        self, zip_code: int, care_type: CareType, facility_id: int, facility_name: str
     ):
-        # TODO: Implement posthog analytics
-        pass
+        self.posthog.track_event(
+            uid=None,
+            event_name="care_facility_search_not_available",
+            properties={
+                "zip_code": zip_code,
+                "care_type": care_type,
+                "facility_id": facility_id,
+                "facility_name": facility_name,
+            },
+        )
 
     async def __analytics_search_facilities_found(
         self, zip_code: int, care_type: CareType, facility_id: int, facility_name: str
     ):
-        # TODO: Implement posthog analytics
-        pass
+        self.posthog.track_event(
+            uid=None,
+            event_name="care_facility_search_found",
+            properties={
+                "zip_code": zip_code,
+                "care_type": care_type,
+                "facility_id": facility_id,
+                "facility_name": facility_name,
+            },
+        )
 
     async def find_best_match(
         self,
@@ -66,15 +91,16 @@ class CareFacilityService:
             background_tasks.add_task(
                 self.__analytics_search_facilities_not_available,
                 zip_code,
-                settings.ZIP_CODE_RANGE_SEARCH,
                 care_type,
+                # Nearest facility
+                facilities[0].id,
+                facilities[0].name,
             )
             return None
         else:  # No facilities found
             background_tasks.add_task(
                 self.__analytics_search_facilities_not_found,
                 zip_code,
-                settings.ZIP_CODE_RANGE_SEARCH,
                 care_type,
             )
             return None
